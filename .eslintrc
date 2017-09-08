@@ -1,0 +1,23 @@
+{
+  "extends": [ "eslint:recommended" ],
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    }
+  },
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true,
+    "worker": true,
+    "mocha": true
+  },
+  "rules": {
+    "quotes": [ "error", "single", "avoid-escape" ],
+    "comma-dangle": [ "error", "never" ],
+    "semi": [ "error", "always" ],
+    "no-underscore-dangle": 0
+  }
+}
