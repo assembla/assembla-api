@@ -5,20 +5,21 @@
   "author": "Assembla Inc.",
   "main": "dist/assembla.js",
   "scripts": {
-    "lint": "node_modules/.bin/eslint {src,spec}/*{,/*}.js",
-    "test": "node_modules/.bin/mocha --compilers js:babel-core/register --recursive spec/*{,/*}_spec.js",
+    "lint": "eslint {src,spec}/*{,/*}.js",
+    "test": "mocha --compilers js:babel-core/register --recursive spec/*{,/*}_spec.js",
     "build": "rm -rf ./dist/*; npm run lint; npm run test; node_modules/.bin/babel src -d dist"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:assembla/assembla-api.git"
+    "url": "git+ssh://git@github.com/assembla/assembla-api.git"
   },
   "files": [
     "dist"
   ],
   "keywords": [
-    "assembla", "api"
+    "assembla",
+    "api"
   ],
   "dependencies": {
     "whatwg-fetch": "^2.0.3"
@@ -35,5 +36,9 @@
   },
   "engines": {
     "node": ">=4"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/assembla/assembla-api/issues"
+  },
+  "homepage": "https://github.com/assembla/assembla-api#readme"
 }
