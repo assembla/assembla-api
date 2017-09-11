@@ -10,6 +10,7 @@ Refresh, however, might be performed automatically, with the help of back-end pr
 ## Supported endpoints:
 * /v1/users/ID
 * /v1/spaces
+* /v1/spaces/SPACE_ID/search
 * /v1/spaces/SPACE_ID/space_tools
 * /v1/spaces/SPACE_ID/space_tools/TOOL_ID/merge_requests
 * /v1/spaces/SPACE_ID/space_tools/TOOL_ID/merge_requests/MR_ID
@@ -66,6 +67,19 @@ AssemblaApi
   .spaceTools.find('tool-id')
   .mergeRequests
   .create({ /* create data, check API docs for details */ })
+  .then(parsedJson => { /* do stuff with response */ })
+  .catch(err => { /* process errors */ });
+
+AssemblaApi
+  .spaces.find('space-id')
+  .search({
+    q: 'query input',
+    page: 1,
+    per_page: 20,
+    order_by: 'last_updated',
+    object_scope: 'merge_requests',
+    filter: { target_space_tool_id: 'toolId' }
+  })
   .then(parsedJson => { /* do stuff with response */ })
   .catch(err => { /* process errors */ });
 ```

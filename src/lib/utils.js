@@ -120,7 +120,7 @@ function authorizedRequest(token, path, data, method) {
 
   if(Object.keys(data).length > 0) {
     if(method === 'GET') {
-      params = simpleQueryString(data);
+      params = queryString(data);
     } else {
       body = JSON.stringify(data);
     }
@@ -149,11 +149,21 @@ function refreshUrl(token) {
   return TOKEN_REFRESHER.replace(':refreshToken', urlSafe(token));
 }
 
-function simpleQueryString(data) {
-  let queryString = Object.keys(data)
-    .map(key => `${urlSafe(key)}=${urlSafe(data[key])}`)
-    .join('&');
-  return `?${queryString}`;
+// query string functionality
+function serialize(data, parent) {
+  return Object.keys(data).map(name => {
+    let key = !!parent ? `${parent}[${name}]` : name;
+    let value = data[name];
+    if(value !== null, typeof value === 'object') {
+      return serialize(value, key);
+    }
+
+    return `${urlSafe(key)}=${urlSafe(data[name])}`;
+  }).join('&');
+}
+
+function queryString(data) {
+  return `?${serialize(data)}`;
 }
 
 function urlSafe(str) {

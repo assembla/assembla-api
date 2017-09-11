@@ -115,6 +115,22 @@ describe('requests', () => {
           .then(() => ensureTruncated(done))
           .catch(done);
       });
+
+      it('.search', done => {
+        let params = {
+          q: 'test query',
+          per_page: 20,
+          order_by: 'last_updated',
+          object_scope: 'merge_requests',
+          filter: { target_space_tool_id: 'toolId' }
+        };
+        validator = readValidator('/v1/spaces/spaceId/search.json?q=test%20query&per_page=20&order_by=last_updated&object_scope=merge_requests&filter%5Btarget_space_tool_id%5D=toolId', accessToken);
+
+        assembla.spaces.find('spaceId').search(params)
+          .then(responseValidator)
+          .then(() => ensureTruncated(done))
+          .catch(done);
+      });
     });
 
     describe('create actions', () => {
