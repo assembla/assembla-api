@@ -48,7 +48,18 @@ function bootstrap(parentEntity, children) {
   return container;
 }
 
+function attachSpaceSearchHander(spaces) {
+  let searchHandler = createEntity('search', spaces);
+  spaces.search = options => (
+    searchHandler.params(options).read().then(res => {
+      spaces.reset();
+      return res;
+    })
+  );
+}
+
 let api = bootstrap(null, STRUCTURE);
+attachSpaceSearchHander(api.spaces);
 
 const Assembla = {
   ...api,
