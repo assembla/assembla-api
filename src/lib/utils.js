@@ -152,7 +152,7 @@ function refreshUrl(token) {
 // query string functionality
 function serialize(data, parent) {
   return Object.keys(data).map(name => {
-    let key = !!parent ? `${parent}[${name}]` : name;
+    let key = parent ? `${parent}[${name}]` : name;
     let value = data[name];
     if(value !== null, typeof value === 'object') {
       return serialize(value, key);
