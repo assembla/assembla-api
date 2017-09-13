@@ -173,8 +173,7 @@ function urlSafe(str) {
 function fetchJson(...data) {
   return getClient()(...data)
     .then(checkStatus)
-    // 204 No content case:
-    .then(res => res.status === 204 ? undefined : res.json());
+    .then(ensureValid);
 }
 
 function checkStatus(response) {
@@ -184,6 +183,21 @@ function checkStatus(response) {
   }
 
   throw ResponseError(response);
+}
+
+function ensureValid(response) {
+  // 204 No content case:
+  if(response.status === 204) {
+    return undefined;
+  }
+
+  let json = response.json();
+  // case, when false-positive 200 is returned from API with body { error: 'error description' }
+  if(json.error) {
+    throw ResponseError({ statusText: json.error, status: 400 });
+  }
+
+  return json;
 }
 
 function ResponseError(res) {
