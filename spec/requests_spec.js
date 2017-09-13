@@ -89,6 +89,24 @@ describe('requests', () => {
       return assembla.spaces.read().then(responseValidator).then(() => done());
     }
 
+
+    describe('false-positive success', () => {
+      beforeEach(() => {
+        res = testResponse({ error: 'unexpected failure' });
+        assembla.useClient(testHttp(res, () => {}));
+      });
+
+      it('raises exeption with proper error satus', done => {
+        assembla.spaces.read()
+          .then(() => done(new Error('expected an error, got success')))
+          .catch(err => {
+            expect(err.statusCode).to.equal(400);
+            expect(err.toString()).to.have.string('unexpected failure');
+            done();
+          });
+      });
+    });
+
     describe('read actions', () => {
       it('.all', done => {
         validator = readValidator('/v1/spaces.json', accessToken);
