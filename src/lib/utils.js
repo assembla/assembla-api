@@ -128,7 +128,7 @@ function authorizedRequest(token, path, data, method) {
 
   let url = apiUrl(path, params);
   let headers = {
-    'Content-Type': 'text/plain',
+    'Content-Type': 'application/json',
     'Authorization': `Bearer ${token}`
   };
   return fetchJson(url, { headers, method, body });
