@@ -11,7 +11,8 @@ function readValidator(expectedPath, token) {
   return (url, options) => {
     expect(url).to.include(expectedPath);
     expect(options.method).to.equal('GET');
-    expect(options.headers).to.include({ Authorization: `Bearer ${token}`});
+    expect(options.headers).to.include({ Authorization: `Bearer ${token}` });
+    expect(options.headers).to.include({ 'Content-Type': 'application/json' });
     expect(options.body).to.be.undefined;
   };
 }
@@ -20,7 +21,8 @@ function createValidator(expectedPath, token, body) {
   return (url, options) => {
     expect(url).to.include(expectedPath);
     expect(options.method).to.equal('POST');
-    expect(options.headers).to.include({ Authorization: `Bearer ${token}`});
+    expect(options.headers).to.include({ Authorization: `Bearer ${token}` });
+    expect(options.headers).to.include({ 'Content-Type': 'application/json' });
     expect(options.body).to.eql(JSON.stringify(body));
   };
 }
@@ -29,7 +31,8 @@ function updateValidator(expectedPath, token, body) {
   return (url, options) => {
     expect(url).to.include(expectedPath);
     expect(options.method).to.equal('PUT');
-    expect(options.headers).to.include({ Authorization: `Bearer ${token}`});
+    expect(options.headers).to.include({ Authorization: `Bearer ${token}` });
+    expect(options.headers).to.include({ 'Content-Type': 'application/json' });
     expect(options.body).to.eql(JSON.stringify(body));
   };
 }
@@ -38,7 +41,8 @@ function deleteValidator(expectedPath, token) {
   return (url, options) => {
     expect(url).to.include(expectedPath);
     expect(options.method).to.equal('DELETE');
-    expect(options.headers).to.include({ Authorization: `Bearer ${token}`});
+    expect(options.headers).to.include({ Authorization: `Bearer ${token}` });
+    expect(options.headers).to.include({ 'Content-Type': 'application/json' });
     expect(options.body).to.be.undefined;
   };
 }
@@ -96,7 +100,7 @@ describe('requests', () => {
         assembla.useClient(testHttp(res, () => {}));
       });
 
-      it('raises exeption with proper error satus', done => {
+      it('raises exception with proper error status', done => {
         assembla.spaces.read()
           .then(() => done(new Error('expected an error, got success')))
           .catch(err => {
