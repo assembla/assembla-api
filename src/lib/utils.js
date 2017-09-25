@@ -191,13 +191,14 @@ function ensureValid(response) {
     return undefined;
   }
 
-  let json = response.json();
-  // case, when false-positive 200 is returned from API with body { error: 'error description' }
-  if(json.error) {
-    throw ResponseError({ statusText: json.error, status: 400 });
-  }
+  return response.json().then(json => {
+    // case, when false-positive 200 is returned from API with body { error: 'error description' }
+    if(json.error) {
+      throw ResponseError({ statusText: json.error, status: 400 });
+    }
 
-  return json;
+    return json;
+  });
 }
 
 function ResponseError(res) {

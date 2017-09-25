@@ -12,8 +12,8 @@ function testHttp(response, validator) {
 function testResponse(data, status) {
   return {
     status: status || 200,
-    json: () => data,
-    text: () => data.toString()
+    json: () => new Promise(res => res(data)),
+    text: () => new Promise(res => res(data.toString()))
   };
 }
 
