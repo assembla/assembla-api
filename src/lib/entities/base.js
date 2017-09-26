@@ -1,9 +1,9 @@
 'use strict';
 
-import PathBuilder from './path_builder';
-import { apiRequest } from './utils';
+import PathBuilder from '../path_builder';
+import { apiRequest } from '../utils';
 
-class Entity {
+class Base {
   constructor(name, parent) {
     this.reset();
     this._name = name;
@@ -13,6 +13,9 @@ class Entity {
   reset() {
     this._id = null;
     this._params = {};
+
+    if(!this._parent) { return; }
+    this._parent.reset();
   }
 
   path() {
@@ -83,4 +86,4 @@ class Entity {
   }
 }
 
-export default Entity;
+export default Base;

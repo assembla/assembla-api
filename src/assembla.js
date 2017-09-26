@@ -1,6 +1,8 @@
 'use strict';
 
-import Entity from './lib/entity';
+import BaseEntity from './lib/entities/base';
+import Repos from './lib/entities/repos';
+import searcher from './lib/searcher';
 import {
   getAvatarUrl,
   getToken,
@@ -32,7 +34,7 @@ function camelize(name) {
 }
 
 function createEntity(name, parentEntity, children) {
-  let entity = new Entity(name, parentEntity);
+  let entity = new BaseEntity(name, parentEntity);
   if(!children) {
     return entity;
   }
@@ -48,18 +50,14 @@ function bootstrap(parentEntity, children) {
   return container;
 }
 
-function attachSpaceSearchHander(spaces) {
-  let searchHandler = createEntity('search', spaces);
-  spaces.search = options => (
-    searchHandler.params(options).read().then(res => {
-      spaces.reset();
-      return res;
-    })
-  );
+// custom endpoints
+function attachCustomHandlers(spaces) {
+  spaces.search = searcher(spaces);
+  spaces.repos = new Repos(spaces);
 }
 
 let api = bootstrap(null, STRUCTURE);
-attachSpaceSearchHander(api.spaces);
+attachCustomHandlers(api.spaces);
 
 const Assembla = {
   ...api,

@@ -1,11 +1,11 @@
 {
   "name": "assembla-api",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "API client for Assembla",
   "author": "Assembla Inc.",
   "main": "dist/assembla.js",
   "scripts": {
-    "lint": "eslint {src,spec}/*{,/*}.js",
+    "lint": "eslint {src,spec}/.",
     "test": "mocha --compilers js:babel-core/register --recursive spec/*{,/*}_spec.js",
     "build": "rm -rf ./dist/*; npm run lint; npm run test; node_modules/.bin/babel src -d dist"
   },
@@ -27,7 +27,7 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-register": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-env": "^1.6.0",
     "babel-preset-stage-0": "^6.24.1",
     "babel-plugin-add-module-exports": "^0.2.1",
     "eslint": "^4.5.0",
