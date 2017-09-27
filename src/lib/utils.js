@@ -208,7 +208,12 @@ function ResponseError(res) {
   return error;
 }
 
+function CallError(name, method) {
+  return new Error(`Could not call API - '${name}.${method}' is not allowed`);
+}
+
 export {
+  CallError,
   apiRequest,
   getAvatarUrl,
   getToken,

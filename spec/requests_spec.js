@@ -153,6 +153,57 @@ describe('requests', () => {
           .then(() => ensureTruncated(done))
           .catch(done);
       });
+
+      it('nested items', done => {
+        validator = readValidator('/v1/spaces/spaceId/space_tools/toolId/merge_requests/requestId/versions/versionId.json', accessToken);
+
+        assembla.spaces.find('spaceId').spaceTools.find('toolId').mergeRequests.find('requestId').versions.find('versionId').read()
+          .then(responseValidator)
+          .then(() => ensureTruncated(done))
+          .catch(done);
+      });
+
+      describe('special cases', () => {
+        describe('.commits', () => {
+          let action;
+
+          beforeEach(() => {
+            validator = readValidator('/v1/spaces/spaceId/repos/repoId/commits.json', accessToken);
+          });
+
+          it('.read()', () => {
+            action = assembla.spaces.find('spaceId').repos.find('repoId').commits;
+          });
+
+          it('.all().read()', () => {
+            action = assembla.spaces.find('spaceId').repos.find('repoId').commits.all();
+          });
+
+          afterEach(done => {
+            action.read()
+              .then(responseValidator)
+              .then(() => ensureTruncated(done))
+              .catch(done);
+          });
+        });
+
+        describe('.commit', () => {
+          it('.read()', () => {
+            expect(() => (
+              assembla.spaces.find('spaceId').repos.find('repoId').commit.read()
+            )).to.throw('Could not call API - `find` should be triggered before `commit.read()`');
+          });
+
+          it('.find().read()', done => {
+            validator = readValidator('/v1/spaces/spaceId/repos/repoId/commit/id.json', accessToken);
+
+            assembla.spaces.find('spaceId').repos.find('repoId').commit.find('id').read()
+              .then(responseValidator)
+              .then(() => ensureTruncated(done))
+              .catch(done);
+          });
+        });
+      });
     });
 
     describe('create actions', () => {
@@ -160,9 +211,9 @@ describe('requests', () => {
         validator = createValidator('/v1/spaces.json', accessToken, { name: 'asdqwe' });
 
         assembla.spaces.create({ name: 'asdqwe' }).then(responseValidator);
-        expect(() => {
-          assembla.spaces.find('qwe').create({ name: 'asdqwe' });
-        }).to.throw('Could not call API - `create` should be triggered without ID');
+        expect(() => (
+          assembla.spaces.find('qwe').create({ name: 'asdqwe' })
+        )).to.throw('Could not call API - `create` should be triggered without ID');
       });
 
       it('.create.params', done => {
@@ -179,9 +230,9 @@ describe('requests', () => {
       it('.update', (done) => {
         validator = updateValidator('/v1/spaces/space-id.json', accessToken, { name: 'test' });
 
-        expect(() => {
-          assembla.spaces.update({ name: 'test' });
-        }).to.throw('Could not call API - `find` should be triggered before `update`');
+        expect(() => (
+          assembla.spaces.update({ name: 'test' })
+        )).to.throw('Could not call API - `find` should be triggered before `update`');
 
         assembla.spaces.find('space-id').update({ name: 'test' })
           .then(responseValidator)
@@ -203,9 +254,9 @@ describe('requests', () => {
       it('.delete', (done) => {
         validator = deleteValidator('/v1/spaces/space-id.json', accessToken);
 
-        expect(() => {
-          assembla.spaces.delete();
-        }).to.throw('Could not call API - `find` should be triggered before `delete`');
+        expect(() => (
+          assembla.spaces.delete()
+        )).to.throw('Could not call API - `find` should be triggered before `delete`');
 
         assembla.spaces.find('space-id').delete()
           .then(responseValidator)
@@ -220,6 +271,44 @@ describe('requests', () => {
           .then(responseValidator)
           .then(() => ensureTruncated(done))
           .catch(done);
+      });
+    });
+
+    describe('special case entities', () => {
+      let examples = {};
+
+      function readOnlyExamles(name, host) {
+        let list = {};
+        [ 'create', 'update', 'delete' ].forEach(method => {
+          list[`${name}.${method}`] = host;
+        });
+        return list;
+      }
+
+      beforeEach(() => {
+        let repos = assembla.spaces.find('id').repos;
+        let commit = repos.find('repoId').commit;
+        let commits = repos.find('repoId').commits;
+
+        examples = Object.assign({},
+          readOnlyExamles('repos',repos),
+          { 'repos.all':  repos, 'repos.read': repos.find('repoId') },
+          readOnlyExamles('commit', commit),
+          { 'commit.all': commit },
+          readOnlyExamles('commits', commits),
+          { 'commits.find': repos.find('repoId').commits }
+        );
+      });
+
+      it('prevents method call', () => {
+        for(let description in examples) {
+          let [ name, method ] = description.split('.');
+          let host = examples[description];
+
+          expect(() => (
+            host[method]()
+          )).to.throw(`Could not call API - '${name}.${method}' is not allowed`);
+        }
       });
     });
   });
