@@ -129,13 +129,14 @@ function authorizedRequest(token, path, data, method) {
   let url = apiUrl(path, params);
   let headers = {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
     'Authorization': `Bearer ${token}`
   };
   return fetchJson(url, { headers, method, body });
 }
 
 function apiUrl(path, params) {
-  return `${API_URL_BASE}/${VERSION_ID}/${path}.json${params}`;
+  return `${API_URL_BASE}/${VERSION_ID}/${path}${params}`;
 }
 
 function avatarLinkUrl(userId, token) {
