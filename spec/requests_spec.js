@@ -13,6 +13,7 @@ function readValidator(expectedPath, token) {
     expect(options.method).to.equal('GET');
     expect(options.headers).to.include({ Authorization: `Bearer ${token}` });
     expect(options.headers).to.include({ 'Content-Type': 'application/json' });
+    expect(options.headers).to.include({ 'Accept': 'application/json' });
     expect(options.body).to.be.undefined;
   };
 }
@@ -23,6 +24,7 @@ function createValidator(expectedPath, token, body) {
     expect(options.method).to.equal('POST');
     expect(options.headers).to.include({ Authorization: `Bearer ${token}` });
     expect(options.headers).to.include({ 'Content-Type': 'application/json' });
+    expect(options.headers).to.include({ 'Accept': 'application/json' });
     expect(options.body).to.eql(JSON.stringify(body));
   };
 }
@@ -33,6 +35,7 @@ function updateValidator(expectedPath, token, body) {
     expect(options.method).to.equal('PUT');
     expect(options.headers).to.include({ Authorization: `Bearer ${token}` });
     expect(options.headers).to.include({ 'Content-Type': 'application/json' });
+    expect(options.headers).to.include({ 'Accept': 'application/json' });
     expect(options.body).to.eql(JSON.stringify(body));
   };
 }
@@ -43,6 +46,7 @@ function deleteValidator(expectedPath, token) {
     expect(options.method).to.equal('DELETE');
     expect(options.headers).to.include({ Authorization: `Bearer ${token}` });
     expect(options.headers).to.include({ 'Content-Type': 'application/json' });
+    expect(options.headers).to.include({ 'Accept': 'application/json' });
     expect(options.body).to.be.undefined;
   };
 }
@@ -89,7 +93,7 @@ describe('requests', () => {
     });
 
     function ensureTruncated(done) {
-      validator = readValidator('/v1/spaces.json', accessToken);
+      validator = readValidator('/v1/spaces', accessToken);
       return assembla.spaces.read().then(responseValidator).then(() => done());
     }
 
@@ -113,7 +117,7 @@ describe('requests', () => {
 
     describe('read actions', () => {
       it('.all', done => {
-        validator = readValidator('/v1/spaces.json', accessToken);
+        validator = readValidator('/v1/spaces', accessToken);
 
         assembla.spaces.all().read().then(responseValidator);
         // default .read() is the same as .all().read()
@@ -121,7 +125,7 @@ describe('requests', () => {
       });
 
       it('.find', done => {
-        validator = readValidator('/v1/spaces/space-id.json', accessToken);
+        validator = readValidator('/v1/spaces/space-id', accessToken);
 
         assembla.spaces.find('space-id').read()
           .then(responseValidator)
@@ -130,7 +134,7 @@ describe('requests', () => {
       });
 
       it('.find.params', (done) => {
-        validator = readValidator('/v1/spaces/space-id.json?test=1', accessToken);
+        validator = readValidator('/v1/spaces/space-id?test=1', accessToken);
 
         assembla.spaces.find('space-id').params({ test: 1 }).read()
           .then(responseValidator)
@@ -146,7 +150,7 @@ describe('requests', () => {
           object_scope: 'merge_requests',
           filter: { target_space_tool_id: 'toolId' }
         };
-        validator = readValidator('/v1/spaces/spaceId/search.json?q=test%20query&per_page=20&order_by=last_updated&object_scope=merge_requests&filter%5Btarget_space_tool_id%5D=toolId', accessToken);
+        validator = readValidator('/v1/spaces/spaceId/search?q=test%20query&per_page=20&order_by=last_updated&object_scope=merge_requests&filter%5Btarget_space_tool_id%5D=toolId', accessToken);
 
         assembla.spaces.find('spaceId').search(params)
           .then(responseValidator)
@@ -155,7 +159,7 @@ describe('requests', () => {
       });
 
       it('nested items', done => {
-        validator = readValidator('/v1/spaces/spaceId/space_tools/toolId/merge_requests/requestId/versions/versionId.json', accessToken);
+        validator = readValidator('/v1/spaces/spaceId/space_tools/toolId/merge_requests/requestId/versions/versionId', accessToken);
 
         assembla.spaces.find('spaceId').spaceTools.find('toolId').mergeRequests.find('requestId').versions.find('versionId').read()
           .then(responseValidator)
@@ -168,7 +172,7 @@ describe('requests', () => {
           let action;
 
           beforeEach(() => {
-            validator = readValidator('/v1/spaces/spaceId/repos/repoId/commits.json', accessToken);
+            validator = readValidator('/v1/spaces/spaceId/repos/repoId/commits', accessToken);
           });
 
           it('.read()', () => {
@@ -195,7 +199,7 @@ describe('requests', () => {
           });
 
           it('.find().read()', done => {
-            validator = readValidator('/v1/spaces/spaceId/repos/repoId/commit/id.json', accessToken);
+            validator = readValidator('/v1/spaces/spaceId/repos/repoId/commit/id', accessToken);
 
             assembla.spaces.find('spaceId').repos.find('repoId').commit.find('id').read()
               .then(responseValidator)
@@ -208,7 +212,7 @@ describe('requests', () => {
 
     describe('create actions', () => {
       it('.create', () => {
-        validator = createValidator('/v1/spaces.json', accessToken, { name: 'asdqwe' });
+        validator = createValidator('/v1/spaces', accessToken, { name: 'asdqwe' });
 
         assembla.spaces.create({ name: 'asdqwe' }).then(responseValidator);
         expect(() => (
@@ -217,7 +221,7 @@ describe('requests', () => {
       });
 
       it('.create.params', done => {
-        validator = createValidator('/v1/spaces.json', accessToken, { test: 1, name: 'asdqwe'});
+        validator = createValidator('/v1/spaces', accessToken, { test: 1, name: 'asdqwe'});
 
         assembla.spaces.params({ test: 1 }).create({ name: 'asdqwe' })
           .then(responseValidator)
@@ -228,7 +232,7 @@ describe('requests', () => {
 
     describe('update actions', () => {
       it('.update', (done) => {
-        validator = updateValidator('/v1/spaces/space-id.json', accessToken, { name: 'test' });
+        validator = updateValidator('/v1/spaces/space-id', accessToken, { name: 'test' });
 
         expect(() => (
           assembla.spaces.update({ name: 'test' })
@@ -241,7 +245,7 @@ describe('requests', () => {
       });
 
       it('.update.params', (done) => {
-        validator = updateValidator('/v1/spaces/space-id.json', accessToken, { test: 1, name: 'test' });
+        validator = updateValidator('/v1/spaces/space-id', accessToken, { test: 1, name: 'test' });
 
         assembla.spaces.find('space-id').params({ test: 1 }).update({ name: 'test' })
           .then(responseValidator)
@@ -252,7 +256,7 @@ describe('requests', () => {
 
     describe('delete actions', () => {
       it('.delete', (done) => {
-        validator = deleteValidator('/v1/spaces/space-id.json', accessToken);
+        validator = deleteValidator('/v1/spaces/space-id', accessToken);
 
         expect(() => (
           assembla.spaces.delete()
@@ -265,7 +269,7 @@ describe('requests', () => {
       });
 
       it('.delete.params', (done) => {
-        validator = deleteValidator('/v1/spaces/space-id.json', accessToken);
+        validator = deleteValidator('/v1/spaces/space-id', accessToken);
 
         assembla.spaces.find('space-id').params({ test: 1 }).delete()
           .then(responseValidator)
